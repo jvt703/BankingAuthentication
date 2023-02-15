@@ -1,8 +1,7 @@
 package com.authentication.authentication.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Getter
-@Setter
-@Table(name = "user")
+@Table(name = "users ")
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -26,9 +27,11 @@ public class User implements UserDetails {
     private String firstName;
     @Column(nullable = false, name = "password")
     private String password;
+    @Column(nullable = false, name = "lastName")
+    private String lastName;
+    @Column(nullable = false, name = "email")
+    private String email;
 
-    public User() {
-    }
 
     public User(Integer id, Role role, String firstName) {
         this.id = id;

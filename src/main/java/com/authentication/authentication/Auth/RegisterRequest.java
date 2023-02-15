@@ -1,4 +1,5 @@
 package com.authentication.authentication.Auth;
+import com.authentication.authentication.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,5 +13,8 @@ public class RegisterRequest {
     private String lastName;
     private String email;
     private String password;
+
+    //request will be giving Role somehow
+    private Role role;
 
 }
