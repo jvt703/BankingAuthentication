@@ -15,6 +15,7 @@ public class RegisterRequest {
     private String password;
 
     //request will be giving Role somehow
-    private Role role;
+    //testing changing to int
+    private Integer role;
 
 }

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Table(name = "users ")
+@Table(name = "users")
 @Entity
 @Data
 @Builder
@@ -21,7 +21,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "role", referencedColumnName = "id", nullable = false)
     private Role role;
     @Column(nullable = false, name = "firstName")
     private String firstName;
