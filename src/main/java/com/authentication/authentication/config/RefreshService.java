@@ -1,5 +1,6 @@
 package com.authentication.authentication.config;
 
+import com.authentication.authentication.exception.RefreshException;
 import com.authentication.authentication.models.RefreshToken;
 import com.authentication.authentication.repositories.RefreshTokenRepository;
 import com.authentication.authentication.repositories.UserRepository;
@@ -35,6 +36,15 @@ public class RefreshService {
 
         refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
+    }
+
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepository.delete(token);
+            throw new RefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
+        }
+
+        return token;
     }
 
 }
