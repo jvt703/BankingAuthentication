@@ -1,6 +1,5 @@
 package com.authentication.authentication.Auth;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-    private String token;
+public class RefreshRequest {
 
-    private String RefreshToken;
+    private String refreshToken;
 
 }

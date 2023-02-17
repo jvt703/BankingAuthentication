@@ -49,6 +49,8 @@ public class JwtService {
                 .compact();
     }
 
+    //generate refresh token?
+
     //in order to validate the token generated
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);

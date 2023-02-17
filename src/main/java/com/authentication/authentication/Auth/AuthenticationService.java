@@ -39,9 +39,6 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        User test = userRepository.findById(1).get();
-        System.out.println("start");
-        System.out.println(test.toString());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -54,5 +51,23 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+
+    public AuthenticationResponse refresh(AuthenticationRequest request){
+        //here we are going to take the request which should have a refresh token and verify it then if it is verified and not expired we will
+        //send back a response with a new access token and the current refresh token
+
+
+
+
+        //if everything is verified below here
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+
     }
 }
