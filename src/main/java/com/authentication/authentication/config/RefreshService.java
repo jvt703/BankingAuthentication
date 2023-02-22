@@ -15,7 +15,7 @@ import java.util.UUID;
 public class RefreshService {
 
 
-    private Long refreshTokenDurationMs;
+    private Long refreshTokenDurationMs = 120000l;
 
 
     @Autowired
@@ -43,7 +43,6 @@ public class RefreshService {
             refreshTokenRepository.delete(token);
             throw new RefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
         }
-
         return token;
     }
 

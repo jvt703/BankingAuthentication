@@ -40,7 +40,12 @@ public class AuthenticationService {
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        var refreshToken = refreshService.createRefreshToken(user.getId());
+        return AuthenticationResponse
+                .builder()
+                .token(jwtToken)
+                .RefreshToken(refreshToken.getToken())
+                .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -64,6 +69,7 @@ public class AuthenticationService {
     public AuthenticationResponse refresh(RefreshRequest request){
         //here we are going to take the request which should have a refresh token and verify it then if it is verified and not expired we will
         //send back a response with a new access token and the current refresh token
+        System.out.println("here");
         String RequestToken = request.getRefreshToken();
 
        return refreshService.findByToken(RequestToken)
@@ -74,7 +80,6 @@ public class AuthenticationService {
                         return new AuthenticationResponse(Token, RequestToken);
                         }
                         ).orElseThrow(()-> new RefreshException(RequestToken, "refresh token is not in database!"));
-
 
     }
 }
