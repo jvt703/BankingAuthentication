@@ -1,5 +1,6 @@
 package com.authentication.authentication;
 
+import com.authentication.authentication.Auth.AuthenticationRequest;
 import com.authentication.authentication.Auth.AuthenticationResponse;
 import com.authentication.authentication.Auth.AuthenticationService;
 import com.authentication.authentication.Auth.RegisterRequest;
@@ -54,15 +55,22 @@ class AuthenticationApplicationTests {
 	}
 	@Test
 	void checkIfRegisterProducesAuthenticationResponse(){
-
 		RegisterRequest registerRequest = new RegisterRequest("test","case","test2@email.com","testpass",1);
-
 		AuthenticationResponse auth = authenticationService.register(registerRequest);
 		assertNotNull(auth.getToken());
 		assertNotNull(auth.getRefreshToken());
-		System.out.println(auth.getRefreshToken());
-		System.out.println(auth.getToken());
 	}
 
+	@Test
+	void checkIfAuthenticateProducesAuthenticationResponse(){
+		//register to create user first
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test3@email.com","testpass",1);
+		AuthenticationResponse register = authenticationService.register(registerRequest);
+		//now we try to authenticate the above user
+		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test3@email.com","testpass");
+		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
+		assertNotNull(authenticate.getToken());
+		assertNotNull(authenticate.getRefreshToken());
+	}
 
 }
