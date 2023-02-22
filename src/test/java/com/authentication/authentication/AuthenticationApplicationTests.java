@@ -1,5 +1,8 @@
 package com.authentication.authentication;
 
+import com.authentication.authentication.Auth.AuthenticationResponse;
+import com.authentication.authentication.Auth.AuthenticationService;
+import com.authentication.authentication.Auth.RegisterRequest;
 import com.authentication.authentication.models.Role;
 import com.authentication.authentication.models.User;
 import com.authentication.authentication.repositories.RoleRepository;
@@ -9,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthenticationApplicationTests {
@@ -19,6 +21,8 @@ class AuthenticationApplicationTests {
 	@Autowired
 	private RoleRepository roleRepository;
 
+	@Autowired
+	private AuthenticationService authenticationService;
 	@Test
 	void contextLoads() {
 	}
@@ -47,6 +51,18 @@ class AuthenticationApplicationTests {
 		roleRepository.save(role);
 		Role roletest = roleRepository.getRoleByRoleName("test").orElse(null);
 		assertEquals(role.getRoleName(),roletest.getRoleName());
-
 	}
+	@Test
+	void checkIfRegisterProducesAuthenticationResponse(){
+
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test2@email.com","testpass",1);
+
+		AuthenticationResponse auth = authenticationService.register(registerRequest);
+		assertNotNull(auth.getToken());
+		assertNotNull(auth.getRefreshToken());
+		System.out.println(auth.getRefreshToken());
+		System.out.println(auth.getToken());
+	}
+
+
 }
