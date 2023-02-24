@@ -1,5 +1,6 @@
 package com.authentication.authentication.models;
 
+import com.authentication.authentication.repositories.RoleRepository;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,33 +18,36 @@ import java.util.List;
 @AllArgsConstructor
 public class User implements UserDetails {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "role", referencedColumnName = "id", nullable = false)
-    private Role role;
+    private Role roleId;
     @Column(nullable = false, name = "firstName")
     private String firstName;
-    @Column(nullable = false, name = "password")
-    private String password;
     @Column(nullable = false, name = "lastName")
     private String lastName;
+    @Column(nullable = false, name = "password")
+    private String password;
     @Column(nullable = false, name = "email", unique = true)
     private String email;
+    @Column(nullable = false, name = "active")
+    private boolean active;
+    @Column(nullable = false, name = "address")
+    private int addressId;
 
 
-    public User(Integer id, Role role, String firstName) {
-        this.id = id;
-        this.role = role;
-        this.firstName = firstName;
-    }
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //should return a list of roles
-        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+        return List.of(new SimpleGrantedAuthority(roleId.getRoleName()));
     }
 
 

@@ -4,6 +4,7 @@ import com.authentication.authentication.Auth.AuthenticationRequest;
 import com.authentication.authentication.Auth.AuthenticationResponse;
 import com.authentication.authentication.Auth.AuthenticationService;
 import com.authentication.authentication.Auth.RegisterRequest;
+import com.authentication.authentication.dto.UserDTO;
 import com.authentication.authentication.models.Role;
 import com.authentication.authentication.models.User;
 import com.authentication.authentication.repositories.RoleRepository;
@@ -11,12 +12,14 @@ import com.authentication.authentication.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 
 import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthenticationApplicationTests {
+	private final TestRestTemplate restTemplate;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -24,6 +27,12 @@ class AuthenticationApplicationTests {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+
+	@Autowired
+	public AuthenticationApplicationTests(TestRestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 	@Test
 	void contextLoads() {
 	}
@@ -36,7 +45,7 @@ class AuthenticationApplicationTests {
 				.email("Test@email.com")
 				.password("testpass")
 				//will come from request we will then find role by role repository
-				.role(roleRepository.getRoleById(1).orElse(null))
+				.roleId(roleRepository.getRoleById(1).orElse(null))
 				.build();
 		userRepository.save(user);
 
@@ -55,7 +64,7 @@ class AuthenticationApplicationTests {
 	}
 	@Test
 	void checkIfRegisterProducesAuthenticationResponse(){
-		RegisterRequest registerRequest = new RegisterRequest("test","case","test2@email.com","testpass",1);
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test7@email.com","testpass",1);
 		AuthenticationResponse auth = authenticationService.register(registerRequest);
 		assertNotNull(auth.getToken());
 		assertNotNull(auth.getRefreshToken());
@@ -64,13 +73,34 @@ class AuthenticationApplicationTests {
 	@Test
 	void checkIfAuthenticateProducesAuthenticationResponse(){
 		//register to create user first
-		RegisterRequest registerRequest = new RegisterRequest("test","case","test3@email.com","testpass",1);
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test6@email.com","testpass",1);
 		AuthenticationResponse register = authenticationService.register(registerRequest);
 		//now we try to authenticate the above user
-		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test3@email.com","testpass");
+		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
 		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
 		assertNotNull(authenticate.getToken());
 		assertNotNull(authenticate.getRefreshToken());
+	}
+
+	@Test
+	void checkIfUserAuthenticatedRouteAllowsAccess(){
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test6@email.com","testpass",1);
+		AuthenticationResponse register = authenticationService.register(registerRequest);
+		//now we try to authenticate the above user
+		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
+		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
+		String AuthToken = authenticate.getToken();
+
+	}
+
+
+
+	@Test
+	public void test_createUser() {
+		String url = ("http://localhost:8081" + "/api/authentication/register");
+		UserDTO userDTO = new UserDTO( 0,"First", "Last", "Email", "Password");
+		UserDTO postReturn = restTemplate.postForObject(url, userDTO, UserDTO.class);
+		assertEquals(userDTO.firstname(), postReturn.firstname());
 	}
 
 }
