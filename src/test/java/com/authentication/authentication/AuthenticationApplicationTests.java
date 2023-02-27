@@ -4,7 +4,6 @@ import com.authentication.authentication.Auth.AuthenticationRequest;
 import com.authentication.authentication.Auth.AuthenticationResponse;
 import com.authentication.authentication.Auth.AuthenticationService;
 import com.authentication.authentication.Auth.RegisterRequest;
-import com.authentication.authentication.dto.UserDTO;
 import com.authentication.authentication.models.Role;
 import com.authentication.authentication.models.User;
 import com.authentication.authentication.repositories.RoleRepository;
@@ -102,12 +101,5 @@ class AuthenticationApplicationTests {
 
 
 
-//	@Test
-//	public void test_createUser() {
-//		String url = ("http://localhost:8081" + "/api/authentication/register");
-//		UserDTO userDTO = new UserDTO( 0,"First", "Last", "Email", "Password");
-//		UserDTO postReturn = restTemplate.postForObject(url, userDTO, UserDTO.class);
-//		assertEquals(userDTO.firstname(), postReturn.firstname());
-//	}
 
 }
