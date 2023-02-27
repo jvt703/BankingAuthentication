@@ -86,6 +86,7 @@ class AuthenticationApplicationTests {
 		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
 		assertNotNull(authenticate.getToken());
 		assertNotNull(authenticate.getRefreshToken());
+		System.out.println(authenticate.getToken());
 	}
 
 //	@Test
