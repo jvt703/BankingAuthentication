@@ -1,5 +1,7 @@
 package com.authentication.authentication.Auth;
 
+import com.authentication.authentication.DTO.UserWithTokenDTO;
+import com.authentication.authentication.Service.UserService;
 import com.authentication.authentication.config.JwtService;
 import com.authentication.authentication.config.RefreshService;
 import com.authentication.authentication.exception.RefreshException;
@@ -26,28 +28,36 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final UserService userService;
+
     private final  JwtService jwtService;
 
     private final  RefreshService refreshService;
     private final AuthenticationManager authenticationManager;
-    public AuthenticationResponse register(RegisterRequest request) {
+    public UserWithTokenDTO register(RegisterRequest request) {
 
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
+                .emailValidated(false)
                 .password(passwordEncoder.encode(request.getPassword()))
                 //will come from request we will then find role by role repository
                 .roleId(roleRepository.getRoleById( request.getRole()).orElse(null))
+                .active(false)
+                .addressId(0)
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = refreshService.createRefreshToken(user.getId());
-        return AuthenticationResponse
+
+        AuthenticationResponse authRes = AuthenticationResponse
                 .builder()
                 .token(jwtToken)
                 .RefreshToken(refreshToken.getToken())
                 .build();
+        UserWithTokenDTO userWithTokenDTO = userService.createUserWithTokenDTO(user,authRes);
+        return userWithTokenDTO;
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {

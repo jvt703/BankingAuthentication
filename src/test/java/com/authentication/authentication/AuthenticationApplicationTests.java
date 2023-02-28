@@ -4,6 +4,7 @@ import com.authentication.authentication.Auth.AuthenticationRequest;
 import com.authentication.authentication.Auth.AuthenticationResponse;
 import com.authentication.authentication.Auth.AuthenticationService;
 import com.authentication.authentication.Auth.RegisterRequest;
+import com.authentication.authentication.DTO.UserWithTokenDTO;
 import com.authentication.authentication.models.Role;
 import com.authentication.authentication.models.User;
 import com.authentication.authentication.repositories.RoleRepository;
@@ -69,9 +70,9 @@ class AuthenticationApplicationTests {
 		Role role = new Role("Admin");
 		roleRepository.save(role);
 		RegisterRequest registerRequest = new RegisterRequest("test","case","test7@email.com","testpass",1);
-		AuthenticationResponse auth = authenticationService.register(registerRequest);
-		assertNotNull(auth.getToken());
-		assertNotNull(auth.getRefreshToken());
+		UserWithTokenDTO auth = authenticationService.register(registerRequest);
+		assertNotNull(auth.AccessToken());
+		assertNotNull(auth.RefreshToken());
 	}
 
 	@Test
@@ -80,7 +81,7 @@ class AuthenticationApplicationTests {
 		roleRepository.save(role);
 		//register to create user first
 		RegisterRequest registerRequest = new RegisterRequest("test","case","test6@email.com","testpass",1);
-		AuthenticationResponse register = authenticationService.register(registerRequest);
+		UserWithTokenDTO register = authenticationService.register(registerRequest);
 		//now we try to authenticate the above user
 		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
 		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
