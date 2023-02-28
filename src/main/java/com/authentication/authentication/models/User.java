@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private String password;
     @Column(nullable = false, name = "email", unique = true)
     private String email;
-    @Column(nullable = false, name = "emailValidated", unique = true)
+    @Column( name = "emailValidated")
     private boolean emailValidated;
     @Column(nullable = false, name = "active")
     private boolean active;

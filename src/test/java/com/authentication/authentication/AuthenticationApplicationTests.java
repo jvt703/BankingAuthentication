@@ -42,13 +42,17 @@ class AuthenticationApplicationTests {
 
 	@Test
 	void checkIfUserExistsByEmail(){
-		User user = User.builder()
+
+		var user = User.builder()
 				.firstName("test")
 				.lastName("lasttest")
 				.email("Test@email.com")
+				.emailValidated(false)
 				.password("testpass")
 				//will come from request we will then find role by role repository
 				.roleId(roleRepository.getRoleById(1).orElse(null))
+				.active(false)
+				.addressId(0)
 				.build();
 		userRepository.save(user);
 
@@ -89,18 +93,6 @@ class AuthenticationApplicationTests {
 		assertNotNull(authenticate.getRefreshToken());
 		System.out.println(authenticate.getToken());
 	}
-
-//	@Test
-//	void checkIfUserAuthenticatedRouteAllowsAccess(){
-//		RegisterRequest registerRequest = new RegisterRequest("test","case","test6@email.com","testpass",1);
-//		AuthenticationResponse register = authenticationService.register(registerRequest);
-//		//now we try to authenticate the above user
-//		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
-//		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
-//		String AuthToken = authenticate.getToken();
-//
-//	}
-
 
 
 

@@ -32,12 +32,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserDTO createUserDTO(UserDTO userDTO) {
-        ArrayList<User> userList = new ArrayList<>();
-        userList.add(createUser(userMapper(userDTO)));
-        return userDTOMapper(userList).get(0);
-    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserWithTokenDTO createUserWithTokenDTO(User user, AuthenticationResponse authenticationResponse) {
