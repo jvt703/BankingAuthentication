@@ -52,7 +52,7 @@ class AuthenticationApplicationTests {
 				//will come from request we will then find role by role repository
 				.roleId(roleRepository.getRoleById(1).orElse(null))
 				.active(false)
-				.addressId(0)
+					.addressId(0)
 				.build();
 		userRepository.save(user);
 
