@@ -5,8 +5,10 @@ import dev.n1t.authentication.Service.UserService;
 import dev.n1t.authentication.config.JwtService;
 import dev.n1t.authentication.config.RefreshService;
 import dev.n1t.authentication.exception.RefreshException;
+import dev.n1t.authentication.models.Address;
 import dev.n1t.authentication.models.RefreshToken;
 import dev.n1t.authentication.models.User;
+import dev.n1t.authentication.repositories.AddressRepository;
 import dev.n1t.authentication.repositories.RefreshTokenRepository;
 import dev.n1t.authentication.repositories.RoleRepository;
 import dev.n1t.authentication.repositories.UserRepository;
@@ -26,6 +28,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final UserService userService;
@@ -36,6 +39,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     public UserWithTokenDTO register(RegisterRequest request) {
 
+        var address = Address.builder()
+                .city(request.getCity())
+                .state(request.getState())
+                .street(request.getStreet())
+                .zipCode(request.getZipCode())
+                .build();
+        Address addressSaved = addressRepository.save(address);
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -45,7 +55,7 @@ public class AuthenticationService {
                 //will come from request we will then find role by role repository
                 .roleId(roleRepository.getRoleById( request.getRole()).orElse(null))
                 .active(false)
-                .addressId(0)
+                .address(addressSaved)
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);

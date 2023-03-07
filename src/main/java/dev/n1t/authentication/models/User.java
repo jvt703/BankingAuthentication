@@ -37,8 +37,9 @@ public class User implements UserDetails {
     private boolean emailValidated;
     @Column(nullable = false, name = "active")
     private boolean active;
-    @Column(nullable = false, name = "address")
-    private Integer addressId;
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "addressId")
+    private Address address;
 
 
 

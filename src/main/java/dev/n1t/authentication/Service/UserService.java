@@ -62,19 +62,19 @@ public class UserService {
         return userDTOList;
     }
 
-    private User userMapper(UserDTO userDTO) {
-        var user = User.builder()
-                .firstName(userDTO.firstname())
-                .lastName(userDTO.lastname())
-                .email(userDTO.email())
-                .emailValidated(false)
-                .password(userDTO.password())
-                .roleId(roleRepository.getRoleById(1).orElse(null))
-                .active(false)
-                .addressId(0)
-                .build();
-        return user;
-    }
-
+//    private User userMapper(UserDTO userDTO) {
+//        var user = User.builder()
+//                .firstName(userDTO.firstname())
+//                .lastName(userDTO.lastname())
+//                .email(userDTO.email())
+//                .emailValidated(false)
+//                .password(userDTO.password())
+//                .roleId(roleRepository.getRoleById(1).orElse(null))
+//                .active(false)
+//                .addressId(0)
+//                .build();
+//        return user;
+//    }
+//
 
 }
