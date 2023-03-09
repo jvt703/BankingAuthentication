@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @Column(nullable = false, name = "active")
     private boolean active;
     @ManyToOne
-    @JoinColumn(nullable = false, name = "addressId")
+    @JoinColumn(nullable = false, name = "addressId", referencedColumnName = "id")
     private Address address;
 
 

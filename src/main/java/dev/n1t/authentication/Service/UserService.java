@@ -36,6 +36,7 @@ public class UserService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserWithTokenDTO createUserWithTokenDTO(User user, AuthenticationResponse authenticationResponse) {
         UserWithTokenDTO userWithTokenDTO = new UserWithTokenDTO(
+                user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

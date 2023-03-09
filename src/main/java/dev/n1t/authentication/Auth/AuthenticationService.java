@@ -57,10 +57,11 @@ public class AuthenticationService {
                 .active(false)
                 .address(addressSaved)
                 .build();
-        userRepository.save(user);
+
+        User userSaved = userRepository.save(user);
+        System.out.println(userSaved);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = refreshService.createRefreshToken(user.getId());
-
         AuthenticationResponse authRes = AuthenticationResponse
                 .builder()
                 .token(jwtToken)
