@@ -6,6 +6,7 @@ import dev.n1t.authentication.repositories.RefreshTokenRepository;
 import dev.n1t.authentication.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -27,6 +28,8 @@ public class RefreshService {
     public Optional<RefreshToken> findByToken(String token){
         return refreshTokenRepository.findByToken(token);
     }
+
+    @Transactional
     public RefreshToken createRefreshToken(Integer userId) {
 
         RefreshToken refreshToken = new RefreshToken();
@@ -41,7 +44,7 @@ public class RefreshService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
+            throw new RefreshException(token.getToken(), "Refresh token was expired. Please make a new sign in request");
         }
         return token;
     }

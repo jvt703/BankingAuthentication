@@ -72,37 +72,37 @@ class AuthenticationApplicationTests {
 		assertEquals(user.getEmail(),testUser.getEmail());
 	}
 
-//	@Test
-//	void checkIfRoleExistsByRoleName(){
-//		Role role = new Role("test");
-//		roleRepository.save(role);
-//		Role roletest = roleRepository.getRoleByRoleName("test").orElse(null);
-//		assertEquals(role.getRoleName(),roletest.getRoleName());
-//	}
-//	@Test
-//	void checkIfRegisterProducesAuthenticationResponse(){
-//		Role role = new Role("Admin");
-//		roleRepository.save(role);
-//		RegisterRequest registerRequest = new RegisterRequest("test","case","test7@email.com","testpass",1);
-//		UserWithTokenDTO auth = authenticationService.register(registerRequest);
-//		assertNotNull(auth.AccessToken());
-//		assertNotNull(auth.RefreshToken());
-//	}
-//
-//	@Test
-//	void checkIfAuthenticateProducesAuthenticationResponse(){
-//		Role role = new Role("Admin");
-//		roleRepository.save(role);
-//		//register to create user first
-//		RegisterRequest registerRequest = new RegisterRequest("test","case","test6@email.com","testpass",1);
-//		UserWithTokenDTO register = authenticationService.register(registerRequest);
-//		//now we try to authenticate the above user
-//		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
-//		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
-//		assertNotNull(authenticate.getToken());
-//		assertNotNull(authenticate.getRefreshToken());
-//		System.out.println(authenticate.getToken());
-//	}
+	@Test
+	void checkIfRoleExistsByRoleName(){
+		Role role = new Role("test");
+		roleRepository.save(role);
+		Role roletest = roleRepository.getRoleByRoleName("test").orElse(null);
+		assertEquals(role.getRoleName(),roletest.getRoleName());
+	}
+	@Test
+	void checkIfRegisterProducesAuthenticationResponse(){
+		Role role = new Role("Admin");
+		roleRepository.save(role);
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test7@email.com","testpass",1,"city","state","street","zip",11111111L);
+		UserWithTokenDTO auth = authenticationService.register(registerRequest);
+		assertNotNull(auth.AccessToken());
+		assertNotNull(auth.RefreshToken());
+	}
+
+	@Test
+	void checkIfAuthenticateProducesAuthenticationResponse(){
+		Role role = new Role("Admin");
+		roleRepository.save(role);
+		//register to create user first
+		RegisterRequest registerRequest = new RegisterRequest("test","case","test10@email.com","testpass",1,"city","state","street","zip",11111111L);
+		UserWithTokenDTO register = authenticationService.register(registerRequest);
+		//now we try to authenticate the above user
+		AuthenticationRequest authenticationRequest = new AuthenticationRequest("test6@email.com","testpass");
+		AuthenticationResponse authenticate = authenticationService.authenticate(authenticationRequest);
+		assertNotNull(authenticate.getToken());
+		assertNotNull(authenticate.getRefreshToken());
+		System.out.println(authenticate.getToken());
+	}
 
 
 

@@ -19,7 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -82,7 +82,7 @@ public class AuthenticationService {
         UserWithTokenDTO userWithTokenDTO = userService.createUserWithTokenDTO(user,authRes);
         return userWithTokenDTO;
     }
-
+    @Transactional
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {
             // Authenticate the user's credentials
@@ -114,7 +114,7 @@ public class AuthenticationService {
                 .build();
     }
 
-
+    @Transactional
     public AuthenticationResponse refresh(RefreshRequest request){
         //here we are going to take the request which should have a refresh token and verify it then if it is verified and not expired we will
         //send back a response with a new access token and the current refresh token
