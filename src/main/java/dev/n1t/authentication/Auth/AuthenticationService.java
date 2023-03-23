@@ -4,7 +4,7 @@ import dev.n1t.authentication.DTO.UserWithTokenDTO;
 import dev.n1t.authentication.Service.UserService;
 import dev.n1t.authentication.config.JwtService;
 import dev.n1t.authentication.config.RefreshService;
-import dev.n1t.authentication.exception.RefreshException;
+import dev.n1t.authentication.exception.*;
 import dev.n1t.authentication.models.Address;
 import dev.n1t.authentication.models.RefreshToken;
 import dev.n1t.authentication.models.User;
@@ -38,7 +38,10 @@ public class AuthenticationService {
     private final RefreshService refreshService;
     private final AuthenticationManager authenticationManager;
     public UserWithTokenDTO register(RegisterRequest request) {
-
+        Integer roleId = request.getRole();
+        if (!roleRepository.existsById(roleId)) {
+            throw new IllegalArgumentException("Requested role does not exist in the database");
+        }
         var address = Address.builder()
                 .city(request.getCity())
                 .state(request.getState())
@@ -53,15 +56,24 @@ public class AuthenticationService {
                 .emailValidated(false)
                 .password(passwordEncoder.encode(request.getPassword()))
                 //will come from request we will then find role by role repository
-                .roleId(roleRepository.getRoleById( request.getRole()).orElse(null))
+                .roleId(roleRepository.getRoleById( roleId).orElse(null))
                 .active(false)
                 .address(addressSaved)
+                .birthDate(request.getBirthDate())
                 .build();
 
-        User userSaved = userRepository.save(user);
-        System.out.println(userSaved);
+        User userSaved;
+        try {
+            userSaved = userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to save user to the database", e);
+        }
+
         var jwtToken = jwtService.generateToken(user);
-        var refreshToken = refreshService.createRefreshToken(user.getId());
+        RefreshToken refreshToken = refreshService.createRefreshToken(user.getId());
+        if (refreshToken == null) {
+            throw new RuntimeException("Failed to generate refresh token");
+        }
         AuthenticationResponse authRes = AuthenticationResponse
                 .builder()
                 .token(jwtToken)
@@ -72,19 +84,33 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = refreshService.createRefreshToken(user.getId());
+        try {
+            // Authenticate the user's credentials
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            throw new AuthenticationCredentialException();
+        }
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException(request.getEmail()));
+        String jwtToken;
+        try {
+            jwtToken = jwtService.generateToken(user);
+        } catch (Exception e) {
+            throw new JWTGenerationException(user.getId().toString());
+        }
+        RefreshToken refreshToken = refreshService.createRefreshToken(user.getId());
+        if (refreshToken == null) {
+            throw new RefreshTokenGenerationException(user.getId().toString());
+        }
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .RefreshToken(refreshToken.getToken())
+                .id(user.getId().toString())
                 .build();
     }
 
@@ -102,9 +128,8 @@ public class AuthenticationService {
                         RefreshToken TokenToDelete = refreshTokenRepository.findByToken(RequestToken).orElse(null);
                         refreshService.deleteRefreshToken(TokenToDelete);
                         RefreshToken NewRefreshToken = refreshService.createRefreshToken(user.getId());
-                        return new AuthenticationResponse(Token, NewRefreshToken.getToken());
+                        return new AuthenticationResponse(Token, NewRefreshToken.getToken(), user.getId().toString());
                         }
                         ).orElseThrow(()-> new RefreshException(RequestToken, "refresh token is not in database!"));
-
     }
 }

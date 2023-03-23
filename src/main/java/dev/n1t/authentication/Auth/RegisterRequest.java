@@ -29,4 +29,6 @@ public class RegisterRequest {
 
     private String zipCode;
 
+    private Long birthDate;
+
 }

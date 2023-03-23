@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Table(name = "users")
@@ -40,6 +41,10 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(nullable = false, name = "addressId", referencedColumnName = "id")
     private Address address;
+
+    @Column(nullable = false, name = "birthDate")
+    private Long birthDate;
+
 
 
 
