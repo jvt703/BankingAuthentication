@@ -1,7 +1,10 @@
 package dev.n1t.authentication.Auth;
 
 
+import dev.n1t.authentication.DTO.AuthResponse;
+import dev.n1t.authentication.DTO.ErrorResponse;
 import dev.n1t.authentication.DTO.UserWithTokenDTO;
+import dev.n1t.authentication.exception.AuthenticationCredentialException;
 import dev.n1t.authentication.exception.AuthenticationException;
 import dev.n1t.authentication.exception.EmailExistsException;
 import dev.n1t.authentication.exception.RefreshTokenGenerationException;
@@ -32,25 +35,27 @@ public class AuthenticationController {
         }
     }
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
+    public ResponseEntity<AuthResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
         try {
             AuthenticationResponse response = service.authenticate(request);
             return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (AuthenticationCredentialException e) {
+            ErrorResponse errorResponse = new ErrorResponse("Invalid email/password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ErrorResponse errorResponse = new ErrorResponse("Internal server error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     @PostMapping("/refreshtoken")
-    public ResponseEntity<AuthenticationResponse> refresh(@RequestBody @Valid RefreshRequest request) {
+    public ResponseEntity<AuthResponse> refresh(@RequestBody @Valid RefreshRequest request) {
         try {
             AuthenticationResponse response = service.refresh(request);
             return ResponseEntity.ok(response);
         } catch (RefreshTokenGenerationException e) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            ErrorResponse errorResponse = new ErrorResponse("Refresh Token Expired");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         } catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

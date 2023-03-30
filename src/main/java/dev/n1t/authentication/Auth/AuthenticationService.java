@@ -38,10 +38,7 @@ public class AuthenticationService {
     private final RefreshService refreshService;
     private final AuthenticationManager authenticationManager;
     public UserWithTokenDTO register(RegisterRequest request) {
-        Integer roleId = request.getRole();
-        if (!roleRepository.existsById(roleId)) {
-            throw new IllegalArgumentException("Requested role does not exist in the database");
-        }
+
         var address = Address.builder()
                 .city(request.getCity())
                 .state(request.getState())
@@ -56,7 +53,7 @@ public class AuthenticationService {
                 .emailValidated(false)
                 .password(passwordEncoder.encode(request.getPassword()))
                 //will come from request we will then find role by role repository
-                .roleId(roleRepository.getRoleById( roleId).orElse(null))
+                .roleId(roleRepository.getRoleById(1).orElse(null))
                 .active(false)
                 .address(addressSaved)
                 .birthDate(request.getBirthDate())

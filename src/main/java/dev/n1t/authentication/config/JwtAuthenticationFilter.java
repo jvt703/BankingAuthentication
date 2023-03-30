@@ -1,5 +1,6 @@
 package dev.n1t.authentication.config;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,13 +32,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userfirstName;
+
+        final String id = request.getParameter("id");
+
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
+
         //starts from after "Bearer " which is 7 chars to get the jwt token
         jwt = authHeader.substring(7);
         userfirstName = jwtService.extractUsername(jwt);
+        //try to sign and get id from claim and opar it to the id from the parameter
+        jwtService.extractClaim(jwt, Claims::getId);
         if(userfirstName!= null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userfirstName);
             if(jwtService.isTokenValid(jwt, userDetails)){

@@ -16,7 +16,7 @@ public class RegisterRequest {
 
     //request will be giving Role somehow
     //testing changing to int
-    private Integer role;
+
 
 
     private String city;
