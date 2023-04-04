@@ -35,6 +35,12 @@ public class UserService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserWithTokenDTO createUserWithTokenDTO(User user, AuthenticationResponse authenticationResponse) {
+        if (authenticationResponse == null || authenticationResponse.getToken() == null) {
+            throw new IllegalArgumentException("AuthenticationResponse with a non-null token is required");
+        }
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
         UserWithTokenDTO userWithTokenDTO = new UserWithTokenDTO(
                 user.getId(),
                 user.getFirstName(),

@@ -11,6 +11,7 @@ import dev.n1t.authentication.config.RefreshService;
 import dev.n1t.authentication.exception.AuthenticationCredentialException;
 import dev.n1t.authentication.exception.JWTGenerationException;
 import dev.n1t.authentication.exception.RefreshTokenGenerationException;
+import dev.n1t.authentication.exception.UserNotFoundException;
 import dev.n1t.authentication.models.Address;
 import dev.n1t.authentication.models.RefreshToken;
 import dev.n1t.authentication.models.Role;
@@ -129,7 +130,7 @@ public class AuthenticationServiceTests {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // When
-        assertThrows(UsernameNotFoundException.class, () -> authenticationService.authenticate(request));
+        assertThrows(UserNotFoundException.class, () -> authenticationService.authenticate(request));
 
         // Then
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
@@ -287,7 +288,7 @@ public class AuthenticationServiceTests {
     void createUserWithTokenDTO_withNullTokenInAuthResponse_shouldThrowIllegalArgumentException() {
         // Given
         User user = mock(User.class);
-        AuthenticationResponse authRes = AuthenticationResponse.builder().build();
+        AuthenticationResponse authRes = AuthenticationResponse.builder().token(null).build();
 
         // When
         assertThrows(IllegalArgumentException.class, () -> {
