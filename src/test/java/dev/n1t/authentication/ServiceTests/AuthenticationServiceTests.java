@@ -12,13 +12,15 @@ import dev.n1t.authentication.exception.AuthenticationCredentialException;
 import dev.n1t.authentication.exception.JWTGenerationException;
 import dev.n1t.authentication.exception.RefreshTokenGenerationException;
 import dev.n1t.authentication.exception.UserNotFoundException;
-import dev.n1t.authentication.models.Address;
+
 import dev.n1t.authentication.models.RefreshToken;
-import dev.n1t.authentication.models.Role;
+
 import dev.n1t.authentication.models.User;
 import dev.n1t.authentication.repositories.AddressRepository;
 import dev.n1t.authentication.repositories.RoleRepository;
 import dev.n1t.authentication.repositories.UserRepository;
+import dev.n1t.models.Address;
+import dev.n1t.models.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -80,7 +82,7 @@ public class AuthenticationServiceTests {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
         User user = User.builder()
-                .id(1)
+                .id(1l)
                 .email(email)
                 .password(password)
                 .build();
@@ -145,7 +147,7 @@ public class AuthenticationServiceTests {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
         User user = User.builder()
-                .id(1)
+                .id(1l)
                 .email(email)
                 .password(password)
                 .build();
@@ -169,7 +171,7 @@ public class AuthenticationServiceTests {
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
         User user = User.builder()
-                .id(1)
+                .id(1l)
                 .email(email)
                 .password(password)
                 .build();
@@ -211,17 +213,17 @@ public class AuthenticationServiceTests {
         when(addressRepository.save(any(Address.class))).thenReturn(address);
 
         Role role = new Role();
-        role.setId(1);
+        role.setId(1l);
         role.setRoleName("ROLE_USER");
-        when(roleRepository.getRoleById(1)).thenReturn(Optional.of(role));
+        when(roleRepository.getRoleById(1l)).thenReturn(Optional.of(role));
 
         User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstname(request.getFirstName())
+                .lastname(request.getLastName())
                 .email(request.getEmail())
                 .emailValidated(false)
                 .password("encodedPassword")
-                .roleId(role)
+                .role(role)
                 .active(false)
                 .address(address)
                 .birthDate(request.getBirthDate())
@@ -268,13 +270,13 @@ public class AuthenticationServiceTests {
     void createUserWithTokenDTO_withNullAuthResponse_shouldThrowIllegalArgumentException() {
         // Given
         User user = new User();
-        user.setId(1);
-        user.setFirstName("John");
-        user.setLastName("Doe");
+        user.setId(1l);
+        user.setFirstname("John");
+        user.setLastname("Doe");
         user.setEmail("john.doe@example.com");
         user.setEmailValidated(false);
         user.setPassword("password");
-        user.setRoleId(new Role(1, "ROLE_USER"));
+        user.setRole(new Role(1l, "ROLE_USER"));
         user.setActive(false);
         user.setAddress(new Address(1l, "123 Main St", "New York", "NY", "10001"));
         user.setBirthDate(1234567890L);

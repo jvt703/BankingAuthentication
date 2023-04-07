@@ -30,7 +30,7 @@ public class RefreshService {
     }
 
     @Transactional
-    public RefreshToken createRefreshToken(Integer userId) {
+    public RefreshToken createRefreshToken(Long userId) {
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(userRepository.findById(userId).get());

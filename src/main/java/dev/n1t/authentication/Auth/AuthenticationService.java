@@ -5,7 +5,7 @@ import dev.n1t.authentication.Service.UserService;
 import dev.n1t.authentication.config.JwtService;
 import dev.n1t.authentication.config.RefreshService;
 import dev.n1t.authentication.exception.*;
-import dev.n1t.authentication.models.Address;
+import dev.n1t.model.Address;
 import dev.n1t.authentication.models.RefreshToken;
 import dev.n1t.authentication.models.User;
 import dev.n1t.authentication.repositories.AddressRepository;
@@ -47,13 +47,13 @@ public class AuthenticationService {
                 .build();
         Address addressSaved = addressRepository.save(address);
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstname(request.getFirstName())
+                .lastname(request.getLastName())
                 .email(request.getEmail())
                 .emailValidated(false)
                 .password(passwordEncoder.encode(request.getPassword()))
                 //will come from request we will then find role by role repository
-                .roleId(roleRepository.getRoleById(1).orElse(null))
+                .role(roleRepository.getRoleById(1l).orElse(null))
                 .active(false)
                 .address(addressSaved)
                 .birthDate(request.getBirthDate())
@@ -80,7 +80,7 @@ public class AuthenticationService {
         return userWithTokenDTO;
     }
     @Transactional
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationCredentialException, UserNotFoundException, JWTGenerationException, RefreshTokenGenerationException {
         try {
             // Authenticate the user's credentials
             authenticationManager.authenticate(
@@ -89,7 +89,7 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             throw new AuthenticationCredentialException();
         }
         User user = userRepository.findByEmail(request.getEmail())
@@ -97,7 +97,7 @@ public class AuthenticationService {
         String jwtToken;
         try {
             jwtToken = jwtService.generateToken(user);
-        } catch (Exception e) {
+        } catch (JWTGenerationException e) {
             throw new JWTGenerationException(user.getId().toString());
         }
         RefreshToken refreshToken = refreshService.createRefreshToken(user.getId());

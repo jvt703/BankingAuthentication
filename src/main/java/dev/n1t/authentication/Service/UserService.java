@@ -43,8 +43,8 @@ public class UserService {
         }
         UserWithTokenDTO userWithTokenDTO = new UserWithTokenDTO(
                 user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
+                user.getFirstname(),
+                user.getLastname(),
                 user.getEmail(),
                 authenticationResponse.getToken(),
                 authenticationResponse.getRefreshToken()
@@ -59,8 +59,8 @@ public class UserService {
         for (User user : userList) {
             UserDTO userDTO = new UserDTO(
                     user.getId(),
-                    user.getFirstName(),
-                    user.getLastName(),
+                    user.getFirstname(),
+                    user.getLastname(),
                     user.getEmail(),
                     user.getPassword()
             );

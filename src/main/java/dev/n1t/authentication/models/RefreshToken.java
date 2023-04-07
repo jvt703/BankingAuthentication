@@ -1,21 +1,26 @@
 package dev.n1t.authentication.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
+
 @Getter
 @Setter
-@Table(name = "refreshToken")
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "RefreshToken")
 @Entity
 public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @OneToOne
-    @JoinColumn(name = "users", referencedColumnName = "id")
+    @JoinColumn(name = "userId", nullable = false, referencedColumnName = "id")
     private User user;
 
     @Column(nullable = false, unique = true)
@@ -24,8 +29,4 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    public RefreshToken() {
-    }
-
 }
-

@@ -36,30 +36,14 @@ public class AuthenticationController {
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
-        try {
-            AuthenticationResponse response = service.authenticate(request);
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationCredentialException e) {
-            ErrorResponse errorResponse = new ErrorResponse("Invalid email/password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse("Internal server error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        AuthenticationResponse response = service.authenticate(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refreshtoken")
     public ResponseEntity<AuthResponse> refresh(@RequestBody @Valid RefreshRequest request) {
-        try {
-            AuthenticationResponse response = service.refresh(request);
-            return ResponseEntity.ok(response);
-        } catch (RefreshTokenGenerationException e) {
-            ErrorResponse errorResponse = new ErrorResponse("Refresh Token Expired");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        AuthenticationResponse response = service.refresh(request);
+        return ResponseEntity.ok(response);
     }
 
 }
