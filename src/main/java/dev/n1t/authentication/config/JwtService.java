@@ -1,5 +1,6 @@
 package dev.n1t.authentication.config;
 
+import dev.n1t.authentication.exception.JWTGenerationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -38,8 +39,12 @@ public class JwtService {
 
 
     public String generateToken(UserDetails userDetails){
-
-        return generateToken(new HashMap<>(), userDetails);
+        try {
+            return generateToken(new HashMap<>(), userDetails);
+            // Token generation code here
+        } catch (Exception e) {
+            throw new JWTGenerationException(userDetails.getUsername());
+        }
     }
     //how we generate the token and set to expire after 24 hours
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){

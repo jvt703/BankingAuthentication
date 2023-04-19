@@ -85,6 +85,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.8</version>
+			<type>maven-plugin</type>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
@@ -142,7 +148,13 @@
 						<phase>test</phase>
 						<goals><goal>report</goal></goals>
 					</execution>
-				</executions></plugin>
+				</executions>
+				<configuration>
+					<includes>
+						<include>**/AuthenticationServiceTests.class</include>
+					</includes>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

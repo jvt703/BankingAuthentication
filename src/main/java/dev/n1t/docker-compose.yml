@@ -1,0 +1,14 @@
+version: "3"
+services:
+  springboot-app:
+    # container_name: spring-app
+    image: springbooot-app
+    restart: always
+    build: .
+    ports:
+      - 8000-8999:8080
+    #connection to our db will replace this
+    environment:
+      DB_URL: jdbc:mysql://my-database-host:3306/mydatabase
+      DB_USERNAME: myuser
+      DB_PASSWORD: mypassword

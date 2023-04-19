@@ -59,17 +59,16 @@ public class AuthenticationService {
                 .birthDate(request.getBirthDate())
                 .build();
 
-        User userSaved;
-        try {
-            userSaved = userRepository.save(user);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to save user to the database", e);
+
+        User userSaved = userRepository.save(user);
+        if (userSaved == null) {
+            throw new InvalidRegisterRequestException("Failed to save user");
         }
 
         var jwtToken = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshService.createRefreshToken(user.getId());
         if (refreshToken == null) {
-            throw new RuntimeException("Failed to generate refresh token");
+            throw new InvalidRegisterRequestException("Invalid Register Request");
         }
         AuthenticationResponse authRes = AuthenticationResponse
                 .builder()

@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = "JohnathanTran"
+        //Registry will be team registry
+        IMAGE_NAME = "Authentication-microservice"
+        IMAGE_TAG = "latest"
+        DOCKER_COMPOSE_FILE = "docker-compose.yml"
+        ENV_FILE = "/path/to/.env"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://git1.smoothstack.com/cohorts/2023/organizations/number-1-team/api/authentication-authorization-microservice/-/tree/Dev'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .'
+                sh 'docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "docker-compose -f ${DOCKER_COMPOSE_FILE} --env-file ${ENV_FILE} up -d"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Microservice deployed successfully'
+        }
+        failure {
+            echo 'Deployment failed'
+        }
+    }
+}

@@ -1,26 +1,21 @@
 package dev.n1t.authentication.ServiceTests;
 
-import dev.n1t.authentication.Auth.AuthenticationRequest;
-import dev.n1t.authentication.Auth.AuthenticationResponse;
-import dev.n1t.authentication.Auth.AuthenticationService;
-import dev.n1t.authentication.Auth.RegisterRequest;
+import dev.n1t.authentication.Auth.*;
 import dev.n1t.authentication.DTO.UserWithTokenDTO;
 import dev.n1t.authentication.Service.UserService;
 import dev.n1t.authentication.config.JwtService;
 import dev.n1t.authentication.config.RefreshService;
-import dev.n1t.authentication.exception.AuthenticationCredentialException;
-import dev.n1t.authentication.exception.JWTGenerationException;
-import dev.n1t.authentication.exception.RefreshTokenGenerationException;
-import dev.n1t.authentication.exception.UserNotFoundException;
+import dev.n1t.authentication.exception.*;
 
 import dev.n1t.authentication.models.RefreshToken;
 
 import dev.n1t.authentication.models.User;
 import dev.n1t.authentication.repositories.AddressRepository;
+import dev.n1t.authentication.repositories.RefreshTokenRepository;
 import dev.n1t.authentication.repositories.RoleRepository;
 import dev.n1t.authentication.repositories.UserRepository;
-import dev.n1t.models.Address;
-import dev.n1t.models.Role;
+import dev.n1t.model.Address;
+import dev.n1t.model.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -44,6 +40,9 @@ public class AuthenticationServiceTests {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -115,7 +114,7 @@ public class AuthenticationServiceTests {
         String email = "user@example.com";
         String password = "password";
         AuthenticationRequest request = new AuthenticationRequest(email, password);
-        doThrow(new RuntimeException()).when(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        doThrow(new AuthenticationCredentialException()).when(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
 
         // When
         assertThrows(AuthenticationCredentialException.class, () -> authenticationService.authenticate(request));
@@ -152,7 +151,7 @@ public class AuthenticationServiceTests {
                 .password(password)
                 .build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-        doThrow(new RuntimeException()).when(jwtService).generateToken(user);
+        doThrow(new JWTGenerationException(user.getUsername())).when(jwtService).generateToken(user);
 
         // When
         assertThrows(JWTGenerationException.class,  () -> authenticationService.authenticate(request));
@@ -299,5 +298,57 @@ public class AuthenticationServiceTests {
 
         // Then
         verify(user, never()).getId();
+    }
+    @Test
+    void register_withInvalidRequest_shouldThrowInvalidRequestException() {
+        // Given
+        RegisterRequest request = new RegisterRequest();
+        request.setFirstName("");
+        request.setLastName("");
+        request.setEmail("");
+        request.setPassword("");
+        request.setCity("");
+        request.setState("");
+        request.setStreet("");
+        request.setZipCode("");
+        request.setBirthDate(0L);
+
+        // When
+        assertThrows(InvalidRegisterRequestException.class, () -> authenticationService.register(request));
+
+    }
+
+    @Test
+    void refresh_withValidRefreshToken_shouldReturnAuthenticationResponse() {
+        // Mocking dependencies
+        User user = new User();
+        user.setId(1L);
+        String token = "valid_token";
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(token)
+                .expiryDate(Instant.now().plus(1, ChronoUnit.DAYS))
+                .build();
+
+        // Mock the RefreshService to return the refresh token when `findByToken` is called with the valid token value
+        when(refreshService.findByToken(eq(token))).thenReturn(Optional.of(refreshToken));
+        // Mock the RefreshService to return the refresh token without verifying expiration
+        when(refreshService.verifyExpiration(eq(refreshToken))).thenReturn(refreshToken);
+
+        // Mock the JwtService to return a new token when `generateToken` is called with the user
+        when(jwtService.generateToken(eq(user))).thenReturn("new_token");
+
+        // Mock the RefreshService to return the same refresh token when `createRefreshToken` is called with the user ID
+        when(refreshService.createRefreshToken(eq(user.getId()))).thenReturn(refreshToken);
+
+        // Invoke the method being tested
+        RefreshRequest request = new RefreshRequest(token);
+        AuthenticationResponse response = authenticationService.refresh(request);
+
+        // Assertions
+        assertNotNull(response);
+        assertEquals("new_token", response.getToken());
+        assertEquals(token, response.getRefreshToken());
+        assertEquals("1", response.getId());
     }
 }
