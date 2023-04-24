@@ -1,7 +1,7 @@
 package dev.n1t.authentication.models;
 
-import dev.n1t.model.Address;
-import dev.n1t.model.Role;
+
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

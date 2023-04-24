@@ -1,27 +1,21 @@
 package dev.n1t.authentication.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@Table(name = "role")
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Entity
+@Table(name = "Role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false, unique = true, name = "roleName")
+    @Column(nullable = false, name = "roleName")
     private String roleName;
-
-
-    public Role(String roleName) {
-        this.roleName = roleName;
-    }
 }
