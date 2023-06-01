@@ -16,6 +16,11 @@ pipeline {
                 git 'https://git1.smoothstack.com/cohorts/2023/organizations/number-1-team/api/authentication-authorization-microservice/-/tree/Dev'
             }
         }
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
 
         stage('Build') {
             steps {

@@ -44,7 +44,7 @@ public class DummyDataInitializer {
         System.out.println(outputUserAddress);
         User inputUser = User.builder()
                 .active(true)
-                .email("mario.mario@email.com")
+                .email("ninetenbankmail@gmail.com")
                 .address(outputUserAddress)
                 .firstname("Mario")
                 .lastname("Mario")

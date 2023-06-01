@@ -35,6 +35,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String lastname;
 
+
+    @Column
+    private Integer OTP;
     @NotNull
     @Email
     @Column(nullable = false)
