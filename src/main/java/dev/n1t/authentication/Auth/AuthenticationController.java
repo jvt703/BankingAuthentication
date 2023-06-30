@@ -46,7 +46,7 @@ public class AuthenticationController {
 //this will be the route to authenticate the OTP and actually return the Authentication response
     @PostMapping("/authenticateOTP")
     public ResponseEntity<AuthResponse> authenticateOTP(@RequestBody @Valid AuthenticationRequestOTP request) {
-        System.out.println(request.toString()+"hree");
+
         AuthenticationResponse response = service.authenticate(request);
         return ResponseEntity.ok(response);
     }
